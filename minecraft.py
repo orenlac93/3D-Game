@@ -2,48 +2,41 @@ from ursina import *
 from ursina.prefabs.first_person_controller \
     import FirstPersonController
 
+import player
+import map
 
+# init ursina engine
 app = Ursina()
 
 window.title = 'Minecraft Lite \U0001F600'         # The window title
-window.borderless = False               # Show a border
-window.fullscreen = False               # Do not go Full screen
-window.exit_button.visible = False      # Do not show the in-game red X that loses the window
-window.fps_counter.enabled = True       # Show the FPS (Frames per second) counter
+window.borderless = False                          # Show a border
+window.fullscreen = False                          # Do not go Full screen
+window.exit_button.visible = False                 # Do not show the in-game red X that loses the window
+window.fps_counter.enabled = True                  # Show the FPS (Frames per second) counter
 
+# init the map view
 Sky(texture='sky')
-player = FirstPersonController()
 
-boxes = []
-for i in range(25):
-    for j in range(25):
-        box = Button(color=color.white,
-                     model='cube',
-                     position=(j, 0, i),
-                     texture='grass',
-                     parent=scene,
-                     highlight_color=color.lime,
-                     origin_y=0.5)
-        boxes.append(box)
+# first person player view
+FirstPersonController()
 
-hand = Entity(
-    model='cube',
-    scale=(0.2, 0.2),
-    color=color.orange,
-    rotation=Vec3(150, -10, 0),
-    position=Vec2(0.4, -0.4),
-    parent=camera.ui,
+# map object
+game_map = map.Map()
+game_map.init_boxes()
 
-)
+
+# player object
+player = player.Player()
+player.init_hand()
 
 
 def update():
     if held_keys['left mouse']:
-        hand.position = (0.4, -0.5)
+        player.hand.position = (0.4, -0.5)
     elif held_keys['right mouse']:
-        hand.position = (0.4, -0.5)
+        player.hand.position = (0.4, -0.5)
     else:
-        hand.position = (0.5, -0.6)
+        player.hand.position = (0.5, -0.6)
 
 
 def input(key):
@@ -51,7 +44,7 @@ def input(key):
     if key == 'q':
         quit()
 
-    for box in boxes:
+    for box in game_map.boxes:
         if box.hovered:
             if key == 'left mouse down':
                 new = Button(
@@ -62,9 +55,9 @@ def input(key):
                     highlight_color=color.lime,
                     origin_y=0.5)
 
-                boxes.append(new)
+                game_map.boxes.append(new)
             if key == 'right mouse down':
-                boxes.remove(box)
+                game_map.boxes.remove(box)
                 destroy(box)
 
 
