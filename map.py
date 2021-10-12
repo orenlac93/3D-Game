@@ -1,5 +1,9 @@
 from ursina import *
 
+gray = color.dark_gray
+green = color.white
+brown = color.brown
+
 
 class Map:
 
